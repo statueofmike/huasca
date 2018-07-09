@@ -1,0 +1,3 @@
+include README.md
+include huasca/__doc__
+include huasca/bin/*
