@@ -8,12 +8,23 @@ from PIL import ImageDraw as _ImageDraw
 import numpy as _np
 from scipy import misc as _misc
 
+
+###########################################################
+#####          Keras and Tensorflow Verbosity         #####
+###########################################################
+import sys as _sys
+_stderr = _sys.stderr # https://github.com/keras-team/keras/commit/83aaadaa9d69214880d20b1e2bd9715a6c37fbe6
+_sys.stderr = open(_os.devnull, 'w')
 from keras import backend as _K
 from keras.models import load_model as _load_model
 import tensorflow as _tf
+_sys.stderr = _stderr
 
 # disables some tensorflow noise (but not all)
-_os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+_os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# silences ALL warnings, helps with tensorflow noise again
+import warnings
+warnings.simplefilter("ignore")
 
 ###########################################################
 #####            Model Inference Parameters           #####
@@ -67,7 +78,7 @@ class TinyYolo():
             'Mismatch between model and given anchor and class sizes. ' \
             'Specify matching anchors and classes with --anchors_path and ' \
             '--classes_path flags.'
-        print('Tiny Yolo model, anchors, and classes loaded.')
+        #print('Tiny Yolo model, anchors, and classes loaded.')
 
         ### Check if model is fully convolutional, assuming channel last order.
         self.model_image_size = self.yolo_model.layers[0].input_shape[1:3]

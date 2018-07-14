@@ -1,13 +1,9 @@
 from PIL import Image
-import huasca
 import os
 
-obj = huasca.detection.TinyYolo()
-
+import huasca
 _image = Image.open(os.path.abspath(os.path.dirname(__file__))+'/images/tvmonitor.png')
+annotated,classes,scores = huasca.detection.TinyYolo().process(_image)
 
-annotated,classes,scores = obj.process(_image)
-
-assert('tvmonitor' in classes,"Tiny Yolo didn't detect 'tvmonitor'.")
-
-print("tiny yolo test done")
+assert 'tvmonitor' in classes , "FAIL - Tiny Yolo didn't detect 'tvmonitor'."
+print("PASS - tiny yolo")

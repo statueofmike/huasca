@@ -1,0 +1,1 @@
+""" run all scripts in this folder using __main__.py """
