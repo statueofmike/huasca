@@ -314,7 +314,7 @@ class TinyYolo():
         self.NoPersons = NoPers
         return image
 
-    def process(self, frame):
+    def detect(self, frame):
         """
         Main Calling function
         """
@@ -323,5 +323,7 @@ class TinyYolo():
 
         _boxes,_scores,_classes = self.yolo_predict(frame)
         annotated = self.annotate(frame,_boxes,_scores,_classes)
-        return annotated,[class_names[int(x)] for x in _classes],_scores.tolist()
+
+        _boxes = [(box[0],box[1],box[0]+box[2],box[1]+box[3]) for box in _boxes]
+        return annotated,[class_names[int(x)] for x in _classes],_scores.tolist(),_boxes
 
