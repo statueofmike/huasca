@@ -39,8 +39,8 @@ Returns `annotated`,`classes`,`scores`,`boxes`
     # Use PIL image as input:
     import huasca
 
-    model = huasca.detection.TinyYolo()
-    annotated,classes,scores,boxes = model.detect(_image)
+    detector = huasca.detection.ObjectDetection()
+    annotated,classes,scores,boxes = detector.detect(_image)
 
     annotated.show()
     annotated.save('test.png')

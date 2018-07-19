@@ -23,40 +23,14 @@ _sys.stderr = _stderr
 # disables some tensorflow noise (but not all)
 _os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # silences ALL warnings, helps with tensorflow noise again
-import warnings
-warnings.simplefilter("ignore")
+import warnings as _warnings
+_warnings.simplefilter("ignore")
+
 
 ###########################################################
-#####            Model Inference Parameters           #####
+#####                Tiny YOLO Model                  #####
 ###########################################################
-score_threshold = 0.3
-iou_threshold = 0.5
-
-anchors = _np.array(
-    [[1.08, 1.19], [3.42, 4.41], [6.63, 11.38], [9.42, 5.11], [16.62, 10.52]])
-
-class_names = [
-    "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat",
-    "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person",
-    "pottedplant", "sheep", "sofa", "train", "tvmonitor"
-]
-
-###########################################################
-#####               Annotation Settings               #####
-###########################################################
-hsv_tuples = [(x / len(class_names), 1., 1.)
-              for x in range(len(class_names))]
-
-colors = list(map(  lambda x: _colorsys.hsv_to_rgb(*x)
-                  , hsv_tuples))
-colors = list(map(  lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255))
-                  , colors))
-_random.seed(10101)  # Fixed seed for consistent colors across runs.
-_random.shuffle(colors)  # Shuffle colors to decorrelate adjacent classes.
-_random.seed(None)  # Reset seed to default.
-
-
-class TinyYolo():
+class _TinyYolo():
 
     def __init__(self):
         self._path = _os.path.abspath(_os.path.dirname(__file__))
@@ -67,10 +41,19 @@ class TinyYolo():
         self.NoPersons = 0
 
         self.sess = _K.get_session()
-        self.yolo_model = _load_model(self._path+'/bin/tiny_yolo.h5')
+        self.yolo_model = _load_model(self._path+'/../bin/tiny_yolo.h5')
 
-        num_classes = len(class_names)
-        num_anchors = len(anchors)
+        self.anchors = _np.array([[1.08, 1.19], [3.42, 4.41], [6.63, 11.38], [9.42, 5.11], [16.62, 10.52]])
+
+        self.class_names = [
+                "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat",
+                "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person",
+                "pottedplant", "sheep", "sofa", "train", "tvmonitor"
+            ]
+
+
+        num_classes = len(self.class_names)
+        num_anchors = len(self.anchors)
 
         # TODO: Assumes dim ordering is channel last
         model_output_channels = self.yolo_model.layers[-1].output_shape[-1]
@@ -159,7 +142,9 @@ class TinyYolo():
 
 
     def yolo_boxes_to_corners(self, box_xy, box_wh):
-        """Convert YOLO box predictions to bounding box corners."""
+        """Convert YOLO box predictions to bounding box corners.
+           YOLO boxes - 
+           Output: Physics-matrix notation (x1,y1,x2,y2) box coordinates."""
         box_mins = box_xy - (box_wh / 2.)
         box_maxes = box_xy + (box_wh / 2.)
 
@@ -169,6 +154,7 @@ class TinyYolo():
             box_maxes[..., 1:2],  # y_max
             box_maxes[..., 0:1]  # x_max
         ])
+
 
     def yolo_filter_boxes(self, boxes, box_confidence, box_class_probs, threshold=.6):
         """Filter YOLO boxes based on object and class confidence."""
@@ -223,7 +209,7 @@ class TinyYolo():
     ###########################################################
     #####         Iterative Prediction Execution          #####
     ###########################################################
-    def yolo_predict(self, image):
+    def yolo_predict(self, image, score_threshold = 0.3, iou_threshold = 0.5):
         verbose=False
 
         if self.is_fixed_size:  # TODO: When resizing we can use minibatch input.
@@ -246,7 +232,7 @@ class TinyYolo():
 
         ### Generate output tensor targets for filtered bounding boxes.
         # TODO: Wrap these backend operations with Keras layers.
-        yolo_outputs = self.yolo_head(self.yolo_model.output, anchors, len(class_names))
+        yolo_outputs = self.yolo_head(self.yolo_model.output, self.anchors, len(self.class_names))
         input_image_shape = _K.placeholder(shape=(2, ))
         boxes, scores, classes = self.yolo_eval(
             yolo_outputs,
@@ -268,6 +254,18 @@ class TinyYolo():
 
     def annotate(self, image,boxes,scores,classes):
         """ Add annotation of detected objects to an image """
+        hsv_tuples = [(x / len(self.class_names), 1., 1.)
+                      for x in range(len(self.class_names))]
+
+        colors = list(map(  lambda x: _colorsys.hsv_to_rgb(*x)
+                          , hsv_tuples))
+        colors = list(map(  lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255))
+                          , colors))
+        _random.seed(10101)  # Fixed seed for consistent colors across runs.
+        _random.shuffle(colors)  # Shuffle colors to decorrelate adjacent classes.
+        _random.seed(None)  # Reset seed to default.
+
+
         font = _ImageFont.truetype(font=self._path+'/bin/Arial.ttf', size=_np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
 
         thickness = (image.size[0] + image.size[1]) // 300
@@ -276,7 +274,7 @@ class TinyYolo():
         self.NoPersons = 0
         for i, c in reversed(list(enumerate(classes))):
             c = int(c)
-            predicted_class = class_names[int(c)]
+            predicted_class = self.class_names[int(c)]
             if predicted_class == "person":
                 NoPers+=1
             box = boxes[i]
@@ -316,7 +314,11 @@ class TinyYolo():
 
     def detect(self, frame):
         """
-        Main Calling function
+            Main Calling function
+
+                Box coordinates are in "Physics matrix" notation: 
+                    ( Y1 , X1 , Y2, X2)
+                    (X1,Y1) are box corners from top-left origin
         """
         if isinstance(frame,_Image.__class__):
             frame = _misc.toimage(frame)
@@ -324,6 +326,12 @@ class TinyYolo():
         _boxes,_scores,_classes = self.yolo_predict(frame)
         annotated = self.annotate(frame,_boxes,_scores,_classes)
 
-        _boxes = [(box[0],box[1],box[0]+box[2],box[1]+box[3]) for box in _boxes]
-        return annotated,[class_names[int(x)] for x in _classes],_scores.tolist(),_boxes
+        _boxes = [[int(x) for x in box] for box in _boxes]
+        pwidth,pheight = annotated.size
+
+        return  annotated  \
+              , [self.class_names[int(x)] for x in _classes] \
+              , _scores.tolist() \
+              , _boxes
+
 
