@@ -33,13 +33,12 @@ Returns `annotated`,`classes`,`scores`,`boxes`
 ### Object Detection
 
     # Get a PIL image from somewhere:
-    import rtsp
-    _image = rtsp.Client().read()
+    _image = ...
     
     # Use PIL image as input:
     import huasca
 
-    detector = huasca.detection.ObjectDetection()
+    detector = huasca.detection.ObjectDetector()
     annotated,classes,scores,boxes = detector.detect(_image)
 
     annotated.show()
