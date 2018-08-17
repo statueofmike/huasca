@@ -1,5 +1,7 @@
 # Huasca
 
+##### Computer vision models OOB (out-of-the-bottle).
+
                      __
                     [__]
        ___        .+'. '+.
@@ -12,22 +14,34 @@
     +;::+..+;:.._++.____.+'
     `+.._..`+...+'
 
-Computer vision deep learning models: effective & useable out-of-the-bottle.
+##### Step into the cellar and select a bottle of computer visions.
 
-Step into the cellar and select a model for computer visions.
+  * Object Detection
+  * Object Tracking
 
-## Examples
+## Object Detection
 
-### Object Detection
+Returns `annotated`,`classes`,`scores`,`boxes`
 
-    import rtsp
+  * `annotated`: the input image with annotated boxes and labels drawn on it
+  * `classes`: the labels of detected objects
+  * `scores`: confidence score for each detected object
+  * `boxes`: (x1,y1,x2,y2) coordinates for each box
+    * top-left corner is (0,0) and offsets go down/right (physics indexing)
+
+### Examples
+
+    # Get a PIL image from somewhere:
+    _image = ...
+    
+    # Use PIL image as input:
     import huasca
 
-    obj = huasca.detection.TinyYolo()
-    
-    _image = rtsp.fetch_image()
-
-    annotated,classes,scores = obj.process(_image)
+    detector = huasca.detection.ObjectDetector()
+    annotated,classes,scores,boxes = detector.detect(_image)
 
     annotated.show()
     annotated.save('test.png')
+
+
+## [Object Tracking](https://github.com/statueofmike/object-tracking/blob/master/README.md)

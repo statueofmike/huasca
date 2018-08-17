@@ -1,7 +1,7 @@
 import rtsp
-import CVCellar
+import huasca
 
-obj = CVCellar.detection.TinyYolo()
+obj = huasca.detection.TinyYolo()
 
 _image = rtsp.fetch_image()
 
