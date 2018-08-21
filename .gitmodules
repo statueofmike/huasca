@@ -1,3 +1,0 @@
-[submodule "huasca/object_tracking"]
-	path = huasca/object_tracking
-	url = https://github.com/statueofmike/object-tracking
