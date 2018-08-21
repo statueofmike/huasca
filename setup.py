@@ -34,7 +34,7 @@ setup(name=name
       ]
     , keywords='computer-vision'
     , install_requires=['numpy','scipy','keras','tensorflow','pillow']
-    , python_requires='>=3.6'
+    , python_requires='>=3.5'
     , zip_safe=True
      )
 
