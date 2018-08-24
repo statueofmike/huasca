@@ -9,8 +9,6 @@ scipy = "*"
 keras = "*"
 tensorflow = "*"
 pillow = "*"
-torch = "*"
-torchvision = "*"
 
 [dev-packages]
 
