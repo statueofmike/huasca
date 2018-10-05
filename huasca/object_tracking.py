@@ -164,11 +164,9 @@ class ObjectTracker:
     def frame_update(self,frameA,frameB):
         """ frameB is updated to match objects from frameA. """
         #print("comparing {} new objects with {} old objects".format(len(frameB.new_objects),len(frameA.objects)))
-        no_matches = []
         for obja in frameA.objects:
             for objb in frameB.new_objects:
                 if self.object_match(obja,objb):
-                    #print("we have a match!")
                     objb.observe(obja)
         
         return frameB

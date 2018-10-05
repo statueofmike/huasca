@@ -5,7 +5,7 @@ with open('README.md') as f:
     long_description = f.read()
 
 name = 'huasca'
-version = '0.0.6'
+version = '0.0.7'
 
 from shutil import copyfile
 _workdir = path.abspath(path.dirname(__file__))
@@ -21,7 +21,7 @@ setup(name=name
     , url='https://github.com/statueofmike/{}'.format(name)
     , download_url="https://github.com/statueofmike/{0}/archive/{1}.tar.gz".format(name,version)
     , license='MIT'
-    , packages=['huasca','huasca.detection']
+    , packages=['huasca','huasca.detect']
     , include_package_data=True     # includes files from e.g. MANIFEST.in
     , classifiers=[
         #'Development Status :: 5 - Production/Stable',

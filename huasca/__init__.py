@@ -1,10 +1,8 @@
 import os as _os
 
-from . import detection
+from . import detect
 from . import object_tracking
-
-from .classify import GenderClassifier
-del(classify)
+from . import classify
 
 
 with open(_os.path.abspath(_os.path.dirname(__file__))+'/__doc__','r') as _f:
