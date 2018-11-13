@@ -1,11 +1,11 @@
-from setuptools import setup
+from setuptools import setup,find_packages
 from os import path
 
 with open('README.md') as f:
     long_description = f.read()
 
 name = 'huasca'
-version = '0.0.7'
+version = '0.1.1'
 
 from shutil import copyfile
 _workdir = path.abspath(path.dirname(__file__))
@@ -21,7 +21,7 @@ setup(name=name
     , url='https://github.com/statueofmike/{}'.format(name)
     , download_url="https://github.com/statueofmike/{0}/archive/{1}.tar.gz".format(name,version)
     , license='MIT'
-    , packages=['huasca','huasca.detect']
+    , packages=find_packages()
     , include_package_data=True     # includes files from e.g. MANIFEST.in
     , classifiers=[
         #'Development Status :: 5 - Production/Stable',
@@ -33,7 +33,7 @@ setup(name=name
         'Topic :: Scientific/Engineering :: Information Analysis'
       ]
     , keywords='computer-vision'
-    , install_requires=['numpy','scipy','keras','tensorflow','pillow']
+    , install_requires=['keras','tensorflow','pillow']
     , python_requires='>=3.5'
     , zip_safe=True
      )

@@ -1,9 +1,0 @@
-from PIL import Image
-import os
-
-import huasca
-
-_image = Image.open(os.path.abspath(os.path.dirname(__file__))+'/images/tvmonitor.png')
-annotated,classes,scores,boxes = huasca.detect.ObjectDetector().detect(_image)
-
-assert 'tvmonitor' in classes , "didn't detect 'tvmonitor'."

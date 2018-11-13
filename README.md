@@ -16,47 +16,65 @@
 
 ##### Step into the cellar and select a bottle of computer visions.
 
-  * Object tracking
+  * Face detection & localization
   * Face classification
     * age
     * gender
+  * Object tracking
+  * Object classification w/o localization
 
 ## Roadmap
 
   * v0.1.0 - improve asset loading
-  * v0.2.0 - implement basic models to support classification
+    * annotations for face/object detection
+  * v0.2.0 - reduce and combine models to save space
+  * v0.3.0 - implement basic models to support classification
     * face detection
-    * generic object detection
+    * generic object detection & localization
     * style transfer
     * face recognition
-  * v0.3.0 - reduce and combine models to save space
 
 ## Examples
 
-### Object Detection
+### Detection
+
+Detection results have the following:
+
+  * `boxes`: Boxes follow PIL format of (left, upper, right, lower)
+    * top-left corner is (0,0) and offsets go down/right from there (physics indexing)
+  * `scores`: confidence score for each detected object
+  * `labels`: label description of the object ('face')
+  * `portraits`: the object cropped from its source image
+  * `base_image`: the source image the objects were found in
+  * ~~`annotated`: the source image with objects annotated~~ (not implemented yet)
+
+#### Face Detection
 
     # Get a PIL image from somewhere:
-    _image = ...
+    image = ...
     
     # Use PIL image as input:
     import huasca
 
-    detector = huasca.detect.ObjectDetector()
-    annotated,classes,scores,boxes = detector.detect(_image)
+    results = huasca.detect.faces(image)
 
-    annotated.show()
+    results.portraits[0].show()
     annotated.save('test.png')
 
-  * `annotated`: the input image with annotated boxes and labels drawn on it
-  * `classes`: the labels of detected objects
-  * `scores`: confidence score for each detected object
-  * `boxes`: (x1,y1,x2,y2) coordinates for each box
-    * top-left corner is (0,0) and offsets go down/right (physics indexing)
+
+#### Face Demographics
+
+    # Get a PIL image from somewhere:
+    image = ...
+
+    import huasca
+    gender,age = huasca.classify.demographics(image)
+
 
 ### Object Tracking
 
-    import tracking
+    import huasca
 
     data = json.load(json_data)
-    object_log = tracking.track_objects(data)
+    object_log = huasca.object_tracking.track_objects(data)
     output_json = [obj.to_json() for obj in object_log]
