@@ -20,9 +20,14 @@ class ObjectClassifier:
 ## lazy-loading models
 _classifier = None
 
-def object(input_image_path):
+def object(input_image_path, verbose=True):
+    """ Object detection via Keras Applications Mobilenet V2. Input PIL Image. """
     global _classifier
     if not _classifier:
+        if verbose:
+            print("Lazy-loading object classifier...")
         _classifier = ObjectClassifier()
+        if verbose:
+            print("  ...gender and age models loaded.")
     return _classifier.predict(input_image_path)
 

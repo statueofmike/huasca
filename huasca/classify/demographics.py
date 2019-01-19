@@ -2,28 +2,24 @@
 
 import numpy as np
 import os
+import pkgutil
+import pathlib
+from huasca import __file__ as _pkgrootfile
+_rootpath = pathlib.PurePath(_pkgrootfile).parent
 
 from ..root import keras
-from keras.models import model_from_json as _model_from_json
+from keras.models import model_from_json as model_from_json
 import tensorflow as tf
 
-_path = os.path.abspath(os.path.dirname(__file__))
 
 def _load_demog_model():
-    #print("Loading demographics models...")
-    with open(_path+'/../bin/gender.classify.json','r') as f:
-        json = f.read()
-    gender_model = _model_from_json(json)
-    gender_model.load_weights(_path+'/../bin/gender.classify.h5')
-    #print("  - gender model loaded")
-
-    with open(_path+'/../bin/age.classify.json','r') as f:
-        json = f.read()
-    age_model = _model_from_json(json)
-    age_model.load_weights(_path+'/../bin/age.classify.h5')
-    #print("  - age model loaded")
-
-    #print("Demographics models loaded.")
+    json = pkgutil.get_data('huasca','bin/gender.classify.json').decode('utf-8')
+    gender_model = model_from_json(json)
+    gender_model.load_weights(_rootpath.joinpath('bin/gender.classify.h5'))
+    
+    json = pkgutil.get_data('huasca','bin/age.classify.json').decode('utf-8')
+    age_model = model_from_json(json)
+    age_model.load_weights(_rootpath.joinpath('bin/age.classify.h5'))
     return gender_model, age_model
 
 class Demographics:
@@ -79,11 +75,16 @@ class Demographics:
 
         return gender, age
 
-## lazy-loading models
+# lazy-loading models
 _classifier = None
 
-def classify_demographics(image):
+def classify_demographics(image,verbose=True):
+    """ Age & Gender Classification via custom Keras model. Input PIL Image. """
     global _classifier
     if not _classifier:
+        if verbose:
+            print("Lazy-loading demographics models...")
         _classifier = Demographics()
+        if verbose:
+            print("  ...demographics models loaded.")
     return _classifier.classify(image)

@@ -5,15 +5,13 @@
 import os
 import numpy as np
 import tensorflow as tf
-
 from PIL import Image
 
 from ..representation import Detection as _Detection
 
-BASE_DIR = os.path.dirname(__file__)
-
-# Path to frozen detection graph. This is the actual model that is used for the object detection.
-PATH_TO_CKPT = BASE_DIR + '/../bin/' + 'face.pb'
+import pathlib
+from huasca import __file__ as _pkgrootfile
+_rootpath = pathlib.PurePath(_pkgrootfile).parent
 
 class FaceDetector:
     def __init__(self):
@@ -22,7 +20,7 @@ class FaceDetector:
         self.sess = tf.Session(graph=self.detection_graph)
         with self.detection_graph.as_default():
             od_graph_def = tf.GraphDef()
-            with tf.gfile.GFile(PATH_TO_CKPT,'rb') as fid:
+            with tf.gfile.GFile(_rootpath.joinpath('bin/face.pb').as_uri(),'rb') as fid:
                 serialized_graph = fid.read()
                 od_graph_def.ParseFromString(serialized_graph)
                 tf.import_graph_def(od_graph_def, name='')
@@ -69,8 +67,15 @@ class FaceDetector:
 ## lazy-loading models
 _detector = None
 
-def detect_faces(image,threshold=0.5):
+def detect_faces(image,threshold=0.5,verbose=True):
+    """ Single-shot face detection.
+       Input PIL.image.
+       via https://github.com/yeephycho/tensorflow-face-detection """
     global _detector
     if not _detector:
+        if verbose:
+            print("Lazy-loading face-detection model...")
         _detector = FaceDetector()
+        if verbose:
+            print("  ...face-detection model loaded.")
     return FaceDetector().detect(image,threshold)
