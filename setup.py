@@ -33,7 +33,7 @@ setup(name=name
         'Topic :: Scientific/Engineering :: Information Analysis'
       ]
     , keywords='computer-vision'
-    , install_requires=['keras','tensorflow','pillow']
+    , install_requires=['keras','tensorflow','numpy','pillow','requests']
     , python_requires='>=3.5'
     , zip_safe=True
      )

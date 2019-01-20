@@ -24,12 +24,10 @@
   * Object tracking
   * Object classification w/o localization
 
+Face and object localization include convenient cropping and annotation methods to feed classifiers.
+
 ## Roadmap
 
-  * v0.2.0
-    * improve asset loading
-    * annotations for face/object detection
-    * generic object detection (COCO classes)
   * v0.3.0 - reduce and combine models to save space
   * v0.4.x - add style transfer
   * v0.4.x - face recognition
@@ -43,12 +41,12 @@ Detection results include:
   * `boxes`: Boxes follow PIL format of (left, upper, right, lower)
     * top-left corner is (0,0) and offsets go down/right from there (physics indexing)
   * `scores`: confidence score for each detected object
-  * `labels`: label description of the object ('face')
-  * `portraits`: the object cropped from its source image
-  * `base_image`: the source image the objects were found in
-  * `annotated`: the source image with objects annotated
+  * `labels`: label description of the object e.g. ['dog','person']
+  * `portraits`: cropped objects from base image (PIL.Image format)
+  * `base_image`: the source image (PIL.Image format)
+  * `annotated`: the source image with objects annotated (PIL.Image format)
 
-#### Face Detection
+#### Face & Object Detection
 
     # Get a PIL image from somewhere:
     image = ...
@@ -56,19 +54,25 @@ Detection results include:
     # Use PIL image as input:
     import huasca
 
-    results = huasca.detect.faces(image)
+    faces   = huasca.detect.faces(image)
+    objects = huasca.detect.objects(image)
 
-    results.portraits[0].show()
-    annotated.save('test.png')
+    # Display the first face
+    faces.portraits[0].show()
+    
+    # Check classes
+    print(objects.labels)
 
+    # Retrieve annotated & labeled version of either
+    faces.annotated.show()
+    objects.annotated.show()
 
 #### Face Demographics
 
-    # Get a PIL image from somewhere:
-    image = ...
+    # Get a PIL image of a face from face detector:
+    face = faces.portraits[0]
 
-    import huasca
-    gender,age = huasca.classify.demographics(image)
+    gender,age = huasca.classify.demographics(face)
 
 
 ### Object Tracking

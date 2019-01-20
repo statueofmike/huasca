@@ -4,6 +4,7 @@ from . import classify
 from . import detect
 from . import object_tracking
 
+del(cellar)
 del(root)
 del(representation)
 
