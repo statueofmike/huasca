@@ -20,25 +20,25 @@
   * Face classification
     * age
     * gender
+  * Object detection & localization
   * Object tracking
   * Object classification w/o localization
 
 ## Roadmap
 
-  * v0.1.0 - improve asset loading
+  * v0.2.0
+    * improve asset loading
     * annotations for face/object detection
-  * v0.2.0 - reduce and combine models to save space
-  * v0.3.0 - implement basic models to support classification
-    * face detection
-    * generic object detection & localization
-    * style transfer
-    * face recognition
+    * generic object detection (COCO classes)
+  * v0.3.0 - reduce and combine models to save space
+  * v0.4.x - add style transfer
+  * v0.4.x - face recognition
 
 ## Examples
 
 ### Detection
 
-Detection results have the following:
+Detection results include:
 
   * `boxes`: Boxes follow PIL format of (left, upper, right, lower)
     * top-left corner is (0,0) and offsets go down/right from there (physics indexing)
@@ -46,7 +46,7 @@ Detection results have the following:
   * `labels`: label description of the object ('face')
   * `portraits`: the object cropped from its source image
   * `base_image`: the source image the objects were found in
-  * ~~`annotated`: the source image with objects annotated~~ (not implemented yet)
+  * `annotated`: the source image with objects annotated
 
 #### Face Detection
 

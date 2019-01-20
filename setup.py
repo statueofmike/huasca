@@ -5,7 +5,7 @@ with open('README.md') as f:
     long_description = f.read()
 
 name = 'huasca'
-version = '0.1.1'
+version = '0.2.0'
 
 from shutil import copyfile
 _workdir = path.abspath(path.dirname(__file__))
